@@ -2,33 +2,27 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PTM Nano Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
-        button { background: #007bff; color: white; border: none; cursor: pointer; }
-        #result { margin-top: 20px; font-weight: bold; color: #333; }
+        .badge-nano { background: #fcd34d; padding: 2px 8px; border-radius: 999px; font-weight: bold; }
+        .perf-led { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
+        <h1 class="text-3xl font-bold text-blue-900">PTM NANO 3.0 Dashboard</h1>
+        <p class="text-gray-600">Le système est prêt. Pas de build, pas d'erreurs.</p>
+        
+        <div id="dashboard-content" class="mt-6">
+            <button onclick="alert('Système PTM Nano Actif')" class="bg-blue-600 text-white px-4 py-2 rounded">Tester le moteur</button>
+        </div>
+    </div>
 
-<div class="container">
-    <h2>PTM Nano 3.0</h2>
-    <input type="number" id="tonnage" placeholder="Tonnage (T)">
-    <input type="number" id="marge" placeholder="Marge (%)">
-    <button onclick="calculer()">Calculer Performance</button>
-    <div id="result"></div>
-</div>
-
-<script>
-    function calculer() {
-        const tonnage = document.getElementById('tonnage').value;
-        const marge = document.getElementById('marge').value;
-        const res = (tonnage * marge) / 100;
-        document.getElementById('result').innerText = "Résultat Optimisation: " + res.toFixed(2) + " T";
-    }
-</script>
-
+    <script>
+        // Ton JavaScript ici
+        console.log("PTM Nano Engine Initialisé");
+    </script>
 </body>
 </html>
