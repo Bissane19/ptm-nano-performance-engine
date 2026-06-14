@@ -1,3 +1,52 @@
-"mentorship_fr": "C'est la version 'Pro' : propre, rapide, avec une courbe de performance intégrée. Pas de build, pas de node_modules, juste de la performance pure. Copie ça, commit, et admire le résultat sur GitHub Pages."
-  }
-]
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>PTM NANO 3.0 PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-900 text-white p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-yellow-400">PTM NANO <span class="text-white">Dashboard</span></h1>
+            <div id="status" class="bg-green-600 px-3 py-1 rounded-full text-xs">SYSTEM ACTIVE</div>
+        </header>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="text-slate-400 text-sm">Performance Engine</h3>
+                <p class="text-4xl font-bold mt-2" id="perf-val">98.4%</p>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="text-slate-400 text-sm">Active Webhooks</h3>
+                <p class="text-4xl font-bold mt-2">12</p>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="text-slate-400 text-sm">System Latency</h3>
+                <p class="text-4xl font-bold mt-2">12ms</p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-slate-800 p-6 rounded-2xl">
+            <canvas id="perfChart" height="100"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('perfChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['0s', '2s', '4s', '6s', '8s', '10s'],
+                datasets: [{
+                    label: 'Efficiency',
+                    data: [85, 92, 90, 95, 98, 98.4],
+                    borderColor: '#facc15',
+                    fill: true
+                }]
+            }
+        });
+    </script>
+</body>
+</html>
