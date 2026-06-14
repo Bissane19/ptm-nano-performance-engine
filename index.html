@@ -1,52 +1,424 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>PTM NANO 3.0 PRO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>PTM NANO – Performance Engine | n8n Ready</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #F0F4F8; }
+    /* Palette : Bleu profond, Jaune or, Blanc */
+    .bg-bleu-pro { background-color: #0A2540; }
+    .text-bleu-pro { color: #0A2540; }
+    .border-bleu-pro { border-color: #0A2540; }
+    .bg-jaune-pro { background-color: #F5A623; }
+    .text-jaune-pro { color: #F5A623; }
+    .border-jaune-pro { border-color: #F5A623; }
+    .btn-pro { transition: all 0.2s ease; }
+    .btn-pro:hover { transform: translateY(-1px); filter: brightness(105%); }
+    .card-pro { transition: transform 0.2s ease, box-shadow 0.2s ease; border: 1px solid #E2E8F0; }
+    .card-pro:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.08); }
+    @media print { .no-print, .game-section, .webhook-section, .log-section { display: none !important; } }
+    /* Badge NANO revisité */
+    .badge-nano {
+      background: linear-gradient(135deg, #F5A623 0%, #D48A00 100%);
+      color: #0A2540;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 0.1em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      margin-left: 8px;
+      border: 1px solid #FBD38D;
+      display: inline-block;
+      transform: skewX(-8deg);
+    }
+    .badge-nano span { display: inline-block; transform: skewX(8deg); }
+    /* Log entries */
+    .log-entry { font-family: monospace; font-size: 0.7rem; padding: 4px; border-bottom: 1px solid #E2E8F0; }
+    .modif-item { background: #FEF9E6; padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; display: inline-block; margin: 2px; border-left: 3px solid #F5A623; }
+    /* Indicateur de performance réseau */
+    .perf-led {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.4; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+  </style>
 </head>
-<body class="bg-slate-900 text-white p-8">
-    <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-yellow-400">PTM NANO <span class="text-white">Dashboard</span></h1>
-            <div id="status" class="bg-green-600 px-3 py-1 rounded-full text-xs">SYSTEM ACTIVE</div>
-        </header>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-slate-400 text-sm">Performance Engine</h3>
-                <p class="text-4xl font-bold mt-2" id="perf-val">98.4%</p>
-            </div>
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-slate-400 text-sm">Active Webhooks</h3>
-                <p class="text-4xl font-bold mt-2">12</p>
-            </div>
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-slate-400 text-sm">System Latency</h3>
-                <p class="text-4xl font-bold mt-2">12ms</p>
-            </div>
-        </div>
+<body class="text-gray-800">
 
-        <div class="mt-8 bg-slate-800 p-6 rounded-2xl">
-            <canvas id="perfChart" height="100"></canvas>
+<div class="container mx-auto px-4 py-6 max-w-7xl">
+  
+  <!-- EN-TÊTE : Version purement industrielle sans données personnelles -->
+  <div class="bg-white rounded-2xl shadow-md mb-6 overflow-hidden border-t-4 border-jaune-pro">
+    <div class="flex flex-wrap justify-between items-center p-4">
+      <!-- Partie gauche : Logo et identité technique -->
+      <div class="flex items-center gap-4">
+        <div class="bg-bleu-pro rounded-xl p-2 shadow-sm">
+          <i class="fas fa-microchip text-jaune-pro text-2xl"></i>
         </div>
+        <div>
+          <div class="flex items-center flex-wrap gap-2">
+            <span class="text-xl font-extrabold text-bleu-pro">PTM</span>
+            <span class="badge-nano"><span>NANO</span></span>
+            <span class="text-xs bg-jaune-pro text-bleu-pro px-2 py-0.5 rounded-full font-semibold">Performance Engine</span>
+          </div>
+          <div class="flex items-center gap-3 mt-1">
+            <span class="text-xs text-gray-500 flex items-center gap-1"><i class="fas fa-bolt text-jaune-pro"></i> n8n Ready</span>
+            <span class="text-xs text-gray-500 flex items-center gap-1"><i class="fas fa-chart-line text-jaune-pro"></i> Real-time Analytics</span>
+            <span class="text-xs text-gray-500 flex items-center gap-1"><span class="perf-led bg-jaune-pro"></span> Webhook Active</span>
+          </div>
+        </div>
+      </div>
+      <!-- Boutons pro -->
+      <div class="flex gap-2 no-print mt-2 md:mt-0">
+        <button id="printBtn" class="bg-bleu-pro text-white px-4 py-2 rounded-xl text-sm font-semibold btn-pro shadow-sm flex items-center gap-2"><i class="fas fa-print"></i> Imprimer</button>
+        <button id="saveBtn" class="bg-jaune-pro text-bleu-pro px-4 py-2 rounded-xl text-sm font-semibold btn-pro shadow-sm flex items-center gap-2"><i class="fas fa-save"></i> Sauvegarder</button>
+        <button id="loadBtn" class="border border-bleu-pro text-bleu-pro bg-white px-4 py-2 rounded-xl text-sm font-semibold btn-pro flex items-center gap-2"><i class="fas fa-upload"></i> Charger</button>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const ctx = document.getElementById('perfChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['0s', '2s', '4s', '6s', '8s', '10s'],
-                datasets: [{
-                    label: 'Efficiency',
-                    data: [85, 92, 90, 95, 98, 98.4],
-                    borderColor: '#facc15',
-                    fill: true
-                }]
-            }
-        });
-    </script>
+  <!-- 5 KPI (jaune/bleu) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
+    <div class="bg-white rounded-xl shadow-sm p-4 border-l-8 border-bleu-pro card-pro"><div><p class="text-gray-500 text-xs uppercase tracking-wider">Chiffre d'affaires</p><p id="kpiCa" class="text-2xl font-extrabold text-bleu-pro">0 MAD</p></div><i class="fas fa-chart-line text-jaune-pro float-right -mt-8 text-2xl"></i></div>
+    <div class="bg-white rounded-xl shadow-sm p-4 border-l-8 border-bleu-pro card-pro"><div><p class="text-gray-500 text-xs uppercase tracking-wider">Marge brute</p><p id="kpiMarge" class="text-2xl font-extrabold text-bleu-pro">0 MAD</p></div><i class="fas fa-coins text-jaune-pro float-right -mt-8 text-2xl"></i></div>
+    <div class="bg-white rounded-xl shadow-sm p-4 border-l-8 border-bleu-pro card-pro"><div><p class="text-gray-500 text-xs uppercase tracking-wider">Taux marge</p><p id="kpiTaux" class="text-2xl font-extrabold text-bleu-pro">0%</p></div><i class="fas fa-percent text-jaune-pro float-right -mt-8 text-2xl"></i></div>
+    <div class="bg-white rounded-xl shadow-sm p-4 border-l-8 border-jaune-pro card-pro"><div><p class="text-gray-500 text-xs uppercase tracking-wider">Seuil rentabilité</p><p id="kpiSeuil" class="text-2xl font-extrabold text-jaune-pro">0 MAD</p></div><i class="fas fa-flag-checkered text-jaune-pro float-right -mt-8 text-2xl"></i></div>
+    <div class="bg-white rounded-xl shadow-sm p-4 border-l-8 border-bleu-pro card-pro"><div><p class="text-gray-500 text-xs uppercase tracking-wider">Score pilotage</p><p id="scorePilotage" class="text-2xl font-extrabold">0/100</p></div><i class="fas fa-trophy text-jaune-pro float-right -mt-8 text-2xl"></i></div>
+  </div>
+
+  <!-- Paramètres + Charges fixes -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm p-5">
+      <h2 class="text-lg font-semibold mb-3 flex items-center gap-2 text-bleu-pro"><i class="fas fa-sliders-h text-jaune-pro"></i> Paramètres stratégiques</h2>
+      <div class="space-y-4">
+        <div><label class="block text-sm font-medium">Prix unitaire (MAD)</label><input type="number" id="prix" value="320" step="5" class="w-full border border-gray-200 rounded-xl px-4 py-2 bg-gray-50 focus:ring-2 focus:ring-jaune-pro"></div>
+        <div><label class="block text-sm font-medium">Coût variable unitaire (MAD)</label><input type="number" id="cv" value="145" step="5" class="w-full border border-gray-200 rounded-xl px-4 py-2 bg-gray-50 focus:ring-2 focus:ring-jaune-pro"></div>
+        <div><label class="block text-sm font-medium">Quantité vendue</label><input type="number" id="qte" value="400" step="10" class="w-full border border-gray-200 rounded-xl px-4 py-2 bg-gray-50 focus:ring-2 focus:ring-jaune-pro"></div>
+        <div class="bg-[#FEF9E6] rounded-xl p-3"><div class="flex justify-between text-sm"><span>Marge unitaire</span><span id="unitMarge" class="font-bold text-bleu-pro">0 MAD</span></div><div class="w-full bg-gray-200 h-2 rounded-full mt-1"><div id="barMarge" class="bg-jaune-pro h-2 rounded-full" style="width:0%"></div></div></div>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-5">
+      <div class="flex justify-between items-center mb-3"><h2 class="text-lg font-semibold text-bleu-pro"><i class="fas fa-receipt text-jaune-pro"></i> Charges fixes (MAD)</h2><button id="ajouterCharge" class="text-sm bg-jaune-pro text-bleu-pro px-3 py-1 rounded-lg font-semibold hover:bg-yellow-500 transition"><i class="fas fa-plus"></i> Ajouter</button></div>
+      <div class="overflow-x-auto max-h-64 overflow-y-auto"><table class="w-full text-sm"><thead class="border-b border-gray-200"><tr><th class="text-left py-2">Libellé</th><th class="text-left py-2">Montant</th><th class="w-8"></th></tr></thead><tbody id="tableFixes"></tbody></table></div>
+      <div class="mt-4 pt-3 border-t border-gray-200 flex justify-between font-bold"><span>Total fixes :</span><span id="totalFixes" class="text-jaune-pro">0 MAD</span></div>
+    </div>
+  </div>
+
+  <!-- Jeux pros -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 no-print">
+    <div class="bg-white rounded-2xl shadow-sm p-4 card-pro">
+      <h3 class="font-semibold text-bleu-pro"><i class="fas fa-chart-simple text-jaune-pro"></i> Scénarios what-if</h3>
+      <div class="mt-2 space-y-2 text-sm">
+        <button id="scenarioOpti" class="w-full bg-emerald-50 hover:bg-emerald-100 p-2 rounded-lg text-left flex justify-between transition"><span>📈 Optimiste (+15% qte, -5% CV)</span><span>→</span></button>
+        <button id="scenarioPessi" class="w-full bg-amber-50 hover:bg-amber-100 p-2 rounded-lg text-left flex justify-between transition"><span>📉 Pessimiste (-10% qte, +8% CV)</span><span>→</span></button>
+        <button id="scenarioEquilibre" class="w-full bg-blue-50 hover:bg-blue-100 p-2 rounded-lg text-left flex justify-between transition"><span>⚖️ Atteindre seuil rentabilité</span><span>→</span></button>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-4 card-pro">
+      <h3 class="font-semibold text-bleu-pro"><i class="fas fa-gamepad text-jaune-pro"></i> Défi : Objectif renta</h3>
+      <div class="mt-1"><span class="font-bold">Objectif : </span>Résultat net > 15 000 MAD</div>
+      <div class="mt-2 flex items-center gap-2"><div class="w-full bg-gray-200 rounded-full h-2"><div id="progressDefi" class="bg-jaune-pro h-2 rounded-full" style="width:0%"></div></div><span id="defiMessage" class="text-xs"></span></div>
+      <button id="checkDefi" class="mt-2 w-full bg-indigo-100 text-indigo-700 py-1 rounded-lg text-sm hover:bg-indigo-200 transition">Vérifier objectif</button>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-4 card-pro">
+      <h3 class="font-semibold text-bleu-pro"><i class="fas fa-sliders-h text-jaune-pro"></i> Ajusteur prix</h3>
+      <input type="range" id="prixSlider" min="100" max="600" step="5" value="320" class="w-full accent-jaune-pro">
+      <p class="text-sm mt-1">Prix : <span id="prixSliderVal" class="font-bold text-jaune-pro">320</span> MAD</p>
+    </div>
+  </div>
+
+  <!-- Graphique + analyse seuil -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-4"><canvas id="graphique" height="200"></canvas></div>
+    <div class="bg-white rounded-2xl shadow-sm p-4">
+      <h3 class="font-semibold text-bleu-pro flex items-center gap-2"><i class="fas fa-calculator text-jaune-pro"></i> Analyse seuil (MAD)</h3>
+      <div class="mt-2 space-y-2 text-sm">
+        <div class="flex justify-between"><span>Quantité seuil :</span><span id="analyseSeuilQty" class="font-mono font-bold">—</span></div>
+        <div class="flex justify-between"><span>CA critique :</span><span id="analyseSeuilCa" class="font-mono font-bold">—</span></div>
+        <div class="flex justify-between"><span>Marge sécurité (MAD) :</span><span id="analyseMargeSec" class="font-mono">—</span></div>
+        <div class="flex justify-between"><span>Indice sécurité (%) :</span><span id="analyseIndiceSec" class="font-mono">—</span></div>
+        <div class="flex justify-between"><span>Point mort (jours) :</span><span id="analysePointMort" class="font-mono">—</span></div>
+        <div class="flex justify-between"><span>Levier opérationnel :</span><span id="analyseLevier" class="font-mono">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alertes + Interface de synchronisation (n8n) -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm p-4">
+      <h3 class="font-semibold text-bleu-pro"><i class="fas fa-bell text-jaune-pro"></i> Alertes & conseils</h3>
+      <div id="alertes" class="mt-2 space-y-2 text-sm max-h-48 overflow-auto"></div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-4 webhook-section">
+      <h3 class="font-semibold text-bleu-pro flex items-center gap-2"><i class="fas fa-cloud-upload-alt text-jaune-pro"></i> 📡 n8n Webhook Engine</h3>
+      <div class="mt-2">
+        <label class="block text-xs font-medium">URL du webhook (n8n, Make, Zapier)</label>
+        <input type="url" id="webhookUrl" placeholder="https://votre-n8n.com/webhook/..." class="w-full border border-gray-200 rounded-lg px-3 py-1 text-sm mb-2 focus:ring-2 focus:ring-jaune-pro">
+        <button id="sendWebhook" class="bg-bleu-pro text-white px-4 py-2 rounded-lg text-sm w-full flex items-center justify-center gap-2 hover:bg-opacity-90 transition"><i class="fas fa-paper-plane"></i> Envoyer au webhook</button>
+        <p id="webhookStatus" class="text-xs text-gray-500 mt-2"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Traçabilité des modifications et logs -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 no-print log-section">
+    <div class="bg-white rounded-2xl shadow-sm p-4">
+      <h3 class="font-semibold text-bleu-pro flex items-center gap-2"><i class="fas fa-history text-jaune-pro"></i> Journal des flux (n8n)</h3>
+      <div id="webhookLog" class="mt-2 max-h-48 overflow-y-auto bg-gray-50 rounded-lg p-2 text-xs font-mono">
+        <div class="text-gray-400">Aucun envoi</div>
+      </div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-4">
+      <h3 class="font-semibold text-bleu-pro flex items-center gap-2"><i class="fas fa-edit text-jaune-pro"></i> Suivi des modifications</h3>
+      <div id="modificationsLog" class="mt-2 max-h-48 overflow-y-auto bg-gray-50 rounded-lg p-2 text-xs">
+        <div class="text-gray-400">Ajustez les paramètres...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Résultat détaillé -->
+  <div class="bg-white rounded-2xl shadow-sm p-5 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+      <div><p class="text-gray-500 text-xs">CA actuel</p><p id="detailCA" class="text-xl font-bold text-bleu-pro">0 MAD</p></div>
+      <div><p class="text-gray-500 text-xs">Coûts variables</p><p id="detailCV" class="text-xl font-bold text-bleu-pro">0 MAD</p></div>
+      <div><p class="text-gray-500 text-xs">Charges fixes</p><p id="detailCF" class="text-xl font-bold text-bleu-pro">0 MAD</p></div>
+      <div><p class="text-gray-500 text-xs">Résultat net</p><p id="detailResultat" class="text-xl font-bold">0 MAD</p></div>
+    </div>
+    <div class="mt-4 flex flex-wrap justify-between items-center border-t pt-3 gap-2">
+      <span>Marge sécurité : <span id="margeSecurite" class="font-mono font-bold">0 MAD</span></span>
+      <span>Ratio : <span id="ratioSecurite" class="font-mono font-bold">0%</span></span>
+      <span id="badgeAchievement" class="bg-bleu-pro text-white text-xs px-2 py-1 rounded-full hidden">🏆 Maîtrise</span>
+    </div>
+  </div>
+
+  <!-- Rapport complet -->
+  <div class="bg-white rounded-2xl shadow-sm p-6 border-t-4 border-jaune-pro mb-6">
+    <h2 class="text-xl font-bold text-bleu-pro mb-3 flex items-center gap-2"><i class="fas fa-file-alt text-jaune-pro"></i> Rapport d’analyse – KPI & recommandations</h2>
+    <div id="rapportTexte" class="space-y-4 text-gray-700 text-sm leading-relaxed"></div>
+  </div>
+
+  <!-- Guide -->
+  <div class="bg-[#FEF9E6] rounded-2xl shadow-sm p-5 border border-jaune-pro no-print">
+    <div class="flex gap-3"><i class="fas fa-graduation-cap text-3xl text-jaune-pro"></i><div><h4 class="font-bold text-bleu-pro">📘 PTM NANO – Performance Engine & n8n Integration</h4><p class="text-sm">Badge NANO, webhook n8n, suivi temps réel, scénarios, impression, sauvegarde. Design épuré (jaune, bleu, blanc).</p></div></div>
+  </div>
+  <div class="text-center text-gray-400 text-xs mt-6 no-print">© PTM NANO – Industrial Performance – MAD</div>
+</div>
+
+<script>
+  // === Logique métier complète (identique à la version précédente, avec traçabilité) ===
+  let fixedCharges = [
+    { name: "Loyer bureaux", amount: 8500 },
+    { name: "Salaires fixes", amount: 12500 },
+    { name: "Assurances", amount: 1200 },
+    { name: "Marketing", amount: 2100 },
+    { name: "Frais admins", amount: 950 }
+  ];
+  let chart = null;
+  let webhookHistory = [];
+  let modificationHistory = [];
+
+  const prixInput = document.getElementById('prix');
+  const cvInput = document.getElementById('cv');
+  const qteInput = document.getElementById('qte');
+  const prixSlider = document.getElementById('prixSlider');
+  const prixSliderVal = document.getElementById('prixSliderVal');
+  const tbody = document.getElementById('tableFixes');
+  const totalFixesSpan = document.getElementById('totalFixes');
+
+  function addModification(msg) {
+    modificationHistory.unshift({ time: new Date().toLocaleTimeString(), msg });
+    if (modificationHistory.length > 10) modificationHistory.pop();
+    const modifDiv = document.getElementById('modificationsLog');
+    if (modificationHistory.length === 0) modifDiv.innerHTML = '<div class="text-gray-400">Ajustez les paramètres...</div>';
+    else modifDiv.innerHTML = modificationHistory.map(m => `<div class="modif-item">[${m.time}] ${m.msg}</div>`).join('');
+  }
+
+  function addWebhookLog(status, url, payload) {
+    webhookHistory.unshift({ time: new Date().toLocaleString(), status, url, payload: JSON.stringify(payload).substring(0, 200) });
+    if (webhookHistory.length > 5) webhookHistory.pop();
+    const logDiv = document.getElementById('webhookLog');
+    if (webhookHistory.length === 0) logDiv.innerHTML = '<div class="text-gray-400">Aucun envoi</div>';
+    else logDiv.innerHTML = webhookHistory.map(e => `<div class="log-entry"><strong>${e.time}</strong> – ${e.status}<br>→ ${e.url}<br><span class="text-gray-500">${e.payload}...</span></div>`).join('');
+  }
+
+  function getTotalFixes() { return fixedCharges.reduce((s,c)=>s+(isNaN(c.amount)?0:c.amount),0); }
+
+  function genererRapport(ca, margeBrute, tauxMarge, seuilCa, seuilQte, margeSec, ratioSec, pointMortJours, levier, score, resultat) {
+    let interpretation = '';
+    interpretation += `<p><strong class="text-bleu-pro">📊 Chiffre d’affaires :</strong> ${ca.toLocaleString('fr-FR')} MAD.</p>`;
+    interpretation += `<p><strong class="text-bleu-pro">💰 Marge brute :</strong> ${margeBrute.toLocaleString('fr-FR')} MAD. ${margeBrute < 0 ? '⚠️ Négative !' : ''}</p>`;
+    interpretation += `<p><strong class="text-bleu-pro">📈 Taux de marge :</strong> ${tauxMarge.toFixed(1)}%. ${tauxMarge < 20 ? '⚠️ Faible' : tauxMarge > 35 ? '✅ Excellente' : ''}</p>`;
+    if (seuilCa && isFinite(seuilCa)) {
+      interpretation += `<p><strong class="text-bleu-pro">🎯 Seuil rentabilité :</strong> ${seuilCa.toLocaleString('fr-FR')} MAD (${Math.ceil(seuilQte)} unités). ${ca >= seuilCa ? '✅ Rentable.' : '❌ Perte.'}</p>`;
+      interpretation += `<p><strong class="text-bleu-pro">🛡️ Marge sécurité :</strong> ${margeSec.toLocaleString('fr-FR')} MAD (${ratioSec.toFixed(1)}%).</p>`;
+      interpretation += `<p><strong class="text-bleu-pro">📅 Point mort :</strong> ${pointMortJours > 0 && pointMortJours <= 30 ? pointMortJours.toFixed(1)+' jours' : (pointMortJours > 30 ? '>30j' : 'N/A')}</p>`;
+    } else { interpretation += `<p><strong class="text-bleu-pro">🎯 Seuil rentabilité :</strong> Non atteignable.</p>`; }
+    interpretation += `<p><strong class="text-bleu-pro">⚙️ Levier :</strong> ${levier !== 'N/A' ? levier : 'N/A'}</p>`;
+    interpretation += `<p><strong class="text-bleu-pro">🏆 Score pilotage :</strong> ${score}/100.</p>`;
+    interpretation += `<p><strong class="text-bleu-pro">📌 Résultat net :</strong> ${resultat.toLocaleString('fr-FR')} MAD.</p>`;
+    interpretation += `<p><em>Recommandation :</em> ${resultat < 0 ? 'Améliorez la marge ou réduisez les fixes.' : (tauxMarge < 25 ? 'Optimisez les coûts variables.' : 'Surveillez l’évolution.')}</p>`;
+    document.getElementById('rapportTexte').innerHTML = interpretation;
+  }
+
+  function refreshAll() {
+    let prix = parseFloat(prixInput.value) || 0;
+    let cv = parseFloat(cvInput.value) || 0;
+    let qte = parseFloat(qteInput.value) || 0;
+    let totalFixes = getTotalFixes();
+    totalFixesSpan.innerText = totalFixes.toLocaleString('fr-FR',{minimumFractionDigits:2})+' MAD';
+    let ca = prix*qte;
+    let totalVar = cv*qte;
+    let margeBrute = ca - totalVar;
+    let resultat = margeBrute - totalFixes;
+    let tauxMarge = ca===0?0:(margeBrute/ca)*100;
+    let margeUnitaire = prix-cv;
+    document.getElementById('unitMarge').innerText = margeUnitaire.toFixed(2)+' MAD';
+    let pourcMarge = prix===0?0:(margeUnitaire/prix)*100;
+    document.getElementById('barMarge').style.width = Math.min(100,Math.max(0,pourcMarge))+'%';
+    
+    document.getElementById('kpiCa').innerText = ca.toLocaleString('fr-FR',{minimumFractionDigits:0})+' MAD';
+    document.getElementById('kpiMarge').innerText = margeBrute.toLocaleString('fr-FR',{minimumFractionDigits:0})+' MAD';
+    document.getElementById('kpiTaux').innerText = tauxMarge.toFixed(1)+'%';
+    document.getElementById('detailCA').innerText = ca.toLocaleString('fr-FR',{minimumFractionDigits:2})+' MAD';
+    document.getElementById('detailCV').innerText = totalVar.toLocaleString('fr-FR',{minimumFractionDigits:2})+' MAD';
+    document.getElementById('detailCF').innerText = totalFixes.toLocaleString('fr-FR',{minimumFractionDigits:2})+' MAD';
+    document.getElementById('detailResultat').innerHTML = `<span class="${resultat>=0?'text-emerald-600':'text-rose-600'} font-bold">${resultat.toLocaleString('fr-FR',{minimumFractionDigits:2})} MAD</span>`;
+    
+    let seuilCa=0, seuilQte=0, valide=(margeUnitaire>0);
+    if(valide){ seuilQte = totalFixes/margeUnitaire; seuilCa = seuilQte*prix; }
+    let seuilAff = (valide&&isFinite(seuilCa))?seuilCa.toLocaleString('fr-FR',{minimumFractionDigits:0}):'∞';
+    document.getElementById('kpiSeuil').innerText = seuilAff+' MAD';
+    let margeSec = ca - seuilCa;
+    let ratioSec = ca===0?0:(margeSec/ca)*100;
+    document.getElementById('margeSecurite').innerText = (valide&&isFinite(margeSec))?margeSec.toLocaleString('fr-FR',{minimumFractionDigits:2})+' MAD':'N/A';
+    document.getElementById('ratioSecurite').innerText = (valide&&isFinite(ratioSec))?ratioSec.toFixed(1)+'%':'—';
+    
+    document.getElementById('analyseSeuilQty').innerText = (valide&&isFinite(seuilQte))?Math.ceil(seuilQte).toLocaleString()+' unités':'N/A';
+    document.getElementById('analyseSeuilCa').innerText = (valide&&isFinite(seuilCa))?seuilCa.toLocaleString('fr-FR',{minimumFractionDigits:0})+' MAD':'N/A';
+    document.getElementById('analyseMargeSec').innerText = (valide&&isFinite(margeSec))?margeSec.toLocaleString('fr-FR',{minimumFractionDigits:0})+' MAD':'N/A';
+    document.getElementById('analyseIndiceSec').innerText = (valide&&isFinite(ratioSec))?ratioSec.toFixed(1)+'%':'—';
+    let pointMortJours = (valide && isFinite(seuilQte) && qte>0) ? (seuilQte/qte)*30 : 0;
+    document.getElementById('analysePointMort').innerText = (valide && pointMortJours>0 && pointMortJours<=30) ? pointMortJours.toFixed(1)+' jours' : (pointMortJours>30 ? '>30j' : 'N/A');
+    let levier = (margeBrute !== 0 && resultat !== 0) ? (margeBrute / resultat).toFixed(2) : (resultat===0 ? '∞' : '—');
+    document.getElementById('analyseLevier').innerText = (resultat===0 ? 'N/A' : levier);
+    
+    let score = 0;
+    if(tauxMarge>=30) score+=25; else if(tauxMarge>=20) score+=15; else score+=5;
+    if(valide && qte>=seuilQte) score+=30; else if(valide && qte>=seuilQte*0.8) score+=10;
+    if(resultat>0) score+=25;
+    if(margeUnitaire>0 && (prix/cv)>1.5) score+=20;
+    score = Math.min(100, score);
+    document.getElementById('scorePilotage').innerText = score+'/100';
+    if(score>=80) document.getElementById('badgeAchievement').classList.remove('hidden');
+    else document.getElementById('badgeAchievement').classList.add('hidden');
+    
+    let progressDefi = Math.min(100, (resultat/15000)*100);
+    document.getElementById('progressDefi').style.width = Math.max(0,progressDefi)+'%';
+    document.getElementById('defiMessage').innerHTML = (resultat>=15000)?'🎉 OK':' '+resultat.toFixed(0)+'/15000';
+    
+    let alerts = [];
+    if(margeUnitaire<=0) alerts.push({type:'error',msg:'❌ Marge unitaire négative → impossible d’être rentable.'});
+    if(valide && qte<seuilQte) alerts.push({type:'warning',msg:`⚠️ Quantité sous seuil (${Math.ceil(seuilQte)}). Vendez ${Math.ceil(seuilQte-qte)} unités.`});
+    if(valide && qte>=seuilQte && seuilQte>0) alerts.push({type:'success',msg:`✅ Bénéfice + marge sécurité ${margeSec.toFixed(0)} MAD`});
+    if(tauxMarge<20 && tauxMarge>0) alerts.push({type:'warning',msg:'📉 Marge brute faible (<20%)'});
+    if(tauxMarge>=35) alerts.push({type:'success',msg:'🚀 Marge excellente (>35%)'});
+    if(alerts.length===0) alerts.push({type:'info',msg:'Paramètres stables.'});
+    document.getElementById('alertes').innerHTML = alerts.map(a=>`<div class="p-2 rounded-lg ${a.type==='error'?'bg-red-50 border-l-4 border-red-500':a.type==='warning'?'bg-amber-50 border-l-4 border-amber-500':'bg-emerald-50 border-l-4 border-emerald-500'} text-sm">${a.msg}</div>`).join('');
+    
+    if(chart) chart.destroy();
+    let maxQ = Math.max(qte, valide?seuilQte*1.2:qte*1.5,30);
+    maxQ = Math.ceil(maxQ/20)*20;
+    let quantites = [];
+    for(let i=0;i<=maxQ;i+=Math.max(1,Math.floor(maxQ/15))) quantites.push(i);
+    let recettes = quantites.map(q=>prix*q);
+    let coutsTotaux = quantites.map(q=>(cv*q)+totalFixes);
+    const ctx = document.getElementById('graphique').getContext('2d');
+    chart = new Chart(ctx,{type:'line',data:{labels:quantites,datasets:[{label:'CA (MAD)',data:recettes,borderColor:'#0A2540',tension:0.1},{label:'Coûts totaux (MAD)',data:coutsTotaux,borderColor:'#F5A623',tension:0.1}]},options:{responsive:true,maintainAspectRatio:true}});
+    
+    genererRapport(ca, margeBrute, tauxMarge, valide?seuilCa:null, valide?seuilQte:null, margeSec, ratioSec, pointMortJours, levier, score, resultat);
+  }
+
+  function renderFixedTable() {
+    tbody.innerHTML='';
+    fixedCharges.forEach((c,idx)=>{
+      let tr = document.createElement('tr');
+      tr.className='border-b border-gray-100';
+      tr.innerHTML=`<td class="py-1"><input type="text" value="${escapeHtml(c.name)}" data-idx="${idx}" class="charge-name w-full bg-transparent focus:outline-none"></td><td class="py-1"><input type="number" step="100" value="${c.amount}" data-idx="${idx}" class="charge-amount w-24 border border-gray-200 rounded px-1 py-0.5"></td><td class="text-center"><button data-idx="${idx}" class="delCharge text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></td>`;
+      tbody.appendChild(tr);
+    });
+    document.querySelectorAll('.charge-name').forEach(inp=>inp.addEventListener('change',(e)=>{let idx=parseInt(e.target.dataset.idx); if(!isNaN(idx)){ let old= fixedCharges[idx].name; fixedCharges[idx].name=e.target.value; addModification(`Charge renommée : "${old}" → "${e.target.value}"`); refreshAll(); saveToLocal();}}));
+    document.querySelectorAll('.charge-amount').forEach(inp=>inp.addEventListener('input',(e)=>{let idx=parseInt(e.target.dataset.idx); if(!isNaN(idx)){ let old= fixedCharges[idx].amount; fixedCharges[idx].amount=parseFloat(e.target.value)||0; addModification(`Montant modifié : ${fixedCharges[idx].name} de ${old} MAD → ${fixedCharges[idx].amount} MAD`); refreshAll(); saveToLocal();}}));
+    document.querySelectorAll('.delCharge').forEach(btn=>btn.addEventListener('click',(e)=>{let idx=parseInt(btn.dataset.idx); if(!isNaN(idx)){ let removed = fixedCharges[idx].name; fixedCharges.splice(idx,1); addModification(`Charge supprimée : "${removed}"`); renderFixedTable(); refreshAll(); saveToLocal();}}));
+    refreshAll();
+  }
+  function escapeHtml(str){return str.replace(/[&<>]/g,(m)=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+  function saveToLocal(){ localStorage.setItem('ptmNanoPerf',JSON.stringify({prix:prixInput.value,cv:cvInput.value,qte:qteInput.value,fixedCharges:fixedCharges})); addModification("Configuration sauvegardée localement"); }
+  function loadFromLocal(){ let raw=localStorage.getItem('ptmNanoPerf'); if(raw){ try{ let cfg=JSON.parse(raw); if(cfg.prix) prixInput.value=cfg.prix; if(cfg.cv) cvInput.value=cfg.cv; if(cfg.qte) qteInput.value=cfg.qte; if(cfg.fixedCharges) fixedCharges=cfg.fixedCharges; renderFixedTable(); refreshAll(); addModification("Configuration chargée depuis la sauvegarde"); }catch(e){} } }
+  
+  function getPayload() {
+    let prix = parseFloat(prixInput.value) || 0; let cv = parseFloat(cvInput.value) || 0; let qte = parseFloat(qteInput.value) || 0;
+    let totalFixes = getTotalFixes(); let ca = prix*qte; let margeBrute = ca - (cv*qte); let resultat = margeBrute - totalFixes;
+    let margeUnitaire = prix-cv; let seuilCa = (margeUnitaire>0) ? (totalFixes/margeUnitaire)*prix : null;
+    let seuilQte = (margeUnitaire>0) ? totalFixes/margeUnitaire : null; let margeSecurite = (seuilCa!==null && ca) ? ca - seuilCa : null;
+    let tauxMarge = ca===0?0:(margeBrute/ca)*100; let scorePilotage = document.getElementById('scorePilotage').innerText;
+    return { timestamp: new Date().toISOString(), plateforme: "PTM NANO Performance Engine", parametres: { prix_unitaire_mad: prix, cout_variable_mad: cv, quantite_vendue: qte }, charges_fixes_total_mad: totalFixes, resultats: { ca_mad: ca, marge_brute_mad: margeBrute, resultat_net_mad: resultat, taux_marge_pourcent: tauxMarge }, analyse_seuil: { seuil_ca_mad: seuilCa, seuil_quantite: seuilQte, marge_securite_mad: margeSecurite, levier_operationnel: (margeBrute!==0 && resultat!==0) ? (margeBrute/resultat) : null }, score_pilotage: scorePilotage, charges_fixes_detail: fixedCharges };
+  }
+  
+  document.getElementById('sendWebhook').addEventListener('click', async () => {
+    let url = document.getElementById('webhookUrl').value.trim();
+    if(!url) { document.getElementById('webhookStatus').innerText = '❌ Entrez une URL valide'; return; }
+    let payload = getPayload();
+    try {
+      let response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      let statusMsg = response.ok ? '✅ Données transmises au webhook' : `⚠️ HTTP ${response.status}`;
+      document.getElementById('webhookStatus').innerHTML = statusMsg;
+      addWebhookLog(statusMsg, url, payload);
+      addModification(`Données envoyées à l’API externe (n8n)`);
+    } catch(e) { 
+      document.getElementById('webhookStatus').innerHTML = '❌ Erreur réseau';
+      addWebhookLog('❌ Échec de l’envoi', url, payload);
+    }
+  });
+  
+  function watchInput(id, name) {
+    let input = document.getElementById(id);
+    let oldVal = input.value;
+    input.addEventListener('focus', () => { oldVal = input.value; });
+    input.addEventListener('change', () => { if (oldVal != input.value) addModification(`${name} : ${oldVal} → ${input.value}`); refreshAll(); saveToLocal(); });
+  }
+  watchInput('prix', 'Prix unitaire');
+  watchInput('cv', 'Coût variable');
+  watchInput('qte', 'Quantité');
+  
+  document.getElementById('ajouterCharge').addEventListener('click',()=>{ fixedCharges.push({name:"Nouvelle charge",amount:0}); renderFixedTable(); refreshAll(); saveToLocal(); addModification("Ajout d'une charge fixe"); });
+  document.getElementById('saveBtn').addEventListener('click',()=>{ saveToLocal(); alert('Sauvegarde effectuée'); });
+  document.getElementById('loadBtn').addEventListener('click',()=>{ loadFromLocal(); alert('Chargement réussi'); });
+  document.getElementById('printBtn').addEventListener('click',()=>window.print());
+  document.getElementById('scenarioOpti').addEventListener('click',()=>{ let oldQ = qteInput.value, oldCv = cvInput.value; qteInput.value = Math.round(parseFloat(qteInput.value)*1.15); cvInput.value = Math.round(parseFloat(cvInput.value)*0.95); refreshAll(); saveToLocal(); addModification(`Scénario optimiste : Q=${oldQ}→${qteInput.value}, CV=${oldCv}→${cvInput.value}`); });
+  document.getElementById('scenarioPessi').addEventListener('click',()=>{ let oldQ = qteInput.value, oldCv = cvInput.value; qteInput.value = Math.round(parseFloat(qteInput.value)*0.9); cvInput.value = Math.round(parseFloat(cvInput.value)*1.08); refreshAll(); saveToLocal(); addModification(`Scénario pessimiste : Q=${oldQ}→${qteInput.value}, CV=${oldCv}→${cvInput.value}`); });
+  document.getElementById('scenarioEquilibre').addEventListener('click',()=>{ let prix=parseFloat(prixInput.value), cv=parseFloat(cvInput.value), totalF=getTotalFixes(); let margeU=prix-cv; if(margeU>0){ let qteSeuil=Math.ceil(totalF/margeU); let oldQ = qteInput.value; qteInput.value=qteSeuil; refreshAll(); saveToLocal(); addModification(`Atteinte seuil : quantité ${oldQ} → ${qteSeuil}`); } else alert("Marge unitaire négative"); });
+  prixSlider.addEventListener('input',(e)=>{ let val=e.target.value; let oldP = prixInput.value; prixInput.value=val; prixSliderVal.innerText=val; refreshAll(); saveToLocal(); if(oldP != val) addModification(`Prix ajusté : ${oldP} → ${val}`); });
+  document.getElementById('checkDefi').addEventListener('click',()=>{ let resultat = (parseFloat(prixInput.value)*parseFloat(qteInput.value) - parseFloat(cvInput.value)*parseFloat(qteInput.value) - getTotalFixes()); alert(resultat>=15000 ? '🏆 Objectif rentabilité atteint !' : `Objectif non atteint (${resultat.toFixed(0)} MAD / 15000 MAD)`); });
+  
+  renderFixedTable();
+  loadFromLocal();
+  refreshAll();
+  prixSlider.value = prixInput.value;
+  prixSliderVal.innerText = prixInput.value;
+</script>
 </body>
 </html>
